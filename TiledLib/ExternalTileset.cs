@@ -6,7 +6,7 @@ public class ExternalTileset : ITileset
 
     public int FirstGid { get; set; }
 
-    private Lazy<Tileset> _Tileset { get; set; }
+    private Lazy<ITileset> _Tileset { get; set; }
     ITileset Tileset => _Tileset.Value;
 
     public int Columns => Tileset.Columns;
@@ -32,19 +32,19 @@ public class ExternalTileset : ITileset
     public Dictionary<int, Dictionary<string, string>> TileProperties => Tileset.TileProperties;
     public Dictionary<int, Frame[]> TileAnimations => Tileset.TileAnimations;
 
-    public Tile this[int gid] => Tileset[gid];
+    public Tile this[int gid] => Tileset[gid - FirstGid];
     public string this[int gid, string property] => Tileset[gid, property];
 
     public void LoadTileset()
     {
         var v = _Tileset.Value;
     }
-    public void LoadTileset(Func<ExternalTileset, Tileset> loader)
+    public void LoadTileset(Func<ExternalTileset, ITileset> loader)
     {
-        _Tileset = new Lazy<Tileset>(() =>
+        _Tileset = new Lazy<ITileset>(() =>
         {
             var tileset = loader(this);
-            tileset.FirstGid = this.FirstGid;
+            //tileset.FirstGid = this.FirstGid;
             return tileset;
         });
         LoadTileset();
